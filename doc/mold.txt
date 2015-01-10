@@ -1,0 +1,44 @@
+*mold.txt*  A genius template engine.
+
+Version: 0.0.1
+Author:  creasty <yuki@creasty.com>
+License: MIT License
+
+==============================================================================
+CONTENTS                                                       *mold-contents*
+
+INTRODUCTION                                               |mold-introduction|
+USAGE                                                             |mold-usage|
+CHANGELOG                                                     |mold-changelog|
+
+
+
+==============================================================================
+INTRODUCTION                                               *mold-introduction*
+
+*mold* is a genius template engine for Vim.
+
+Requirements:
+- Vim 7.3 or later
+
+Latest version:
+https://github.com/creasty/mold.vim
+
+
+
+==============================================================================
+USAGE                                                             *mold-usage*
+
+To be added...
+
+
+
+==============================================================================
+CHANGELOG                                                     *mold-changelog*
+
+0.0.1
+  - Initial version.
+
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
