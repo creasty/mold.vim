@@ -23,27 +23,9 @@ endfunction
 "==============================================================================================
 function! mold#load(file, lnum) abort
   let ft = s:get_filetype()
+  let tmpl = mold#search(ft, a:file)
 
-  let current = expand('%:p')
-
-  let no_file = empty(a:file)
-  let no_current = empty(current)
-  let no_ft = empty(ft)
-
-  if no_file && no_current && no_ft
-    return
-  endif
-
-  let file = no_file && !no_current ?
-    \ mold#search_by_intelligent(ft, current)
-    \ : mold#search_by_filetype(ft, a:file)
-
-  let ft_path = no_ft ? '**' : ft
-  let matches = split(globpath(g:mold_dir, ft_path . '/' . file), "\n")
-
-  let tmpl = get(matches, 0, '')
-
-  if empty(tmpl) || isdirectory(tmpl)
+  if empty(tmpl)
     return
   endif
 
@@ -62,6 +44,33 @@ endfunction
 
 "=== Search
 "==============================================================================================
+function! mold#search(ft, file) abort
+  let current = expand('%:p')
+
+  let no_ft = empty(a:ft)
+  let no_file = empty(a:file)
+  let no_current = empty(current)
+
+  if no_file && no_current && no_ft
+    return ''
+  endif
+
+  let file = no_file && !no_current ?
+    \ mold#search_by_intelligent(a:ft, current)
+    \ : mold#search_by_filetype(a:ft, a:file)
+
+  let ft_path = no_ft ? '**' : a:ft
+  let matches = split(globpath(g:mold_dir, ft_path . '/' . file), "\n")
+
+  let tmpl = get(matches, 0, '')
+
+  if empty(tmpl) || isdirectory(tmpl)
+    return ''
+  endif
+
+  return tmpl
+endfunction
+
 function! mold#search_by_filetype(ft, file) abort
   let files = s:get_candidate(a:ft, a:file)
 
