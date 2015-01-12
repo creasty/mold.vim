@@ -23,7 +23,8 @@ endfunction
 "==============================================================================================
 function! mold#load(file, lnum) abort
   let ft = s:get_filetype()
-  let tmpl = mold#search(ft, a:file)
+  let current = expand('%:p')
+  let tmpl = mold#search(ft, a:file, current)
 
   if empty(tmpl)
     return
@@ -44,19 +45,17 @@ endfunction
 
 "=== Search
 "==============================================================================================
-function! mold#search(ft, file) abort
-  let current = expand('%:p')
-
+function! mold#search(ft, file, current) abort
   let no_ft = empty(a:ft)
   let no_file = empty(a:file)
-  let no_current = empty(current)
+  let no_current = empty(a:current)
 
   if no_file && no_current && no_ft
     return ''
   endif
 
   let file = no_file && !no_current ?
-    \ mold#search_by_intelligent(a:ft, current)
+    \ mold#search_by_intelligent(a:ft, a:current)
     \ : mold#search_by_filetype(a:ft, a:file)
 
   let ft_path = no_ft ? '**' : a:ft
@@ -105,7 +104,7 @@ endfunction
 function! s:get_filetype()
   if empty(&ft)
     let parts = split(expand('%:t'), '\.')
-    return get(parts, len(parts) - 1, '')
+    return tolower(get(parts, len(parts) - 1, ''))
   else
     return &ft
   endif
@@ -132,7 +131,7 @@ endfunction
 function! s:to_search_pattern(path)
   let pattern = escape(a:path, '\\.*$^~')
   let pattern = substitute(pattern, '\([^/]\+\)/', '\\(\1/\\|.*\\)/\\?', 'g')
-  let pattern = substitute(pattern, 'template', '[^/]\\+', 'g')
+  let pattern = substitute(pattern, 'template', '[^/]*', 'g')
 
   return pattern . '$'
 endfunction

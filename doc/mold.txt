@@ -1,42 +1,60 @@
 *mold.txt*  A genius template engine.
 
-Version: 0.0.1
+Version: 0.0.2
 Author:  creasty <yuki@creasty.com>
 License: MIT License
 
 ==============================================================================
 CONTENTS                                                       *mold-contents*
 
-INTRODUCTION                                               |mold-introduction|
-USAGE                                                             |mold-usage|
-CHANGELOG                                                     |mold-changelog|
+1 INTRODUCTION                                             |mold-introduction|
+2 USAGE                                                           |mold-usage|
+  2.1 TEMPLATE SELECTION                                      |mold-selection|
+  2.2 HOOK                                                         |mold-hook|
+3 CHANGELOG                                                   |mold-changelog|
 
 
 
 ==============================================================================
-INTRODUCTION                                               *mold-introduction*
+1 INTRODUCTION                                             *mold-introduction*
 
 *mold* is a genius template engine for Vim.
 
+Features:
+
+- Intelligent template selecting based on the path
+- Manual template choosing for the filetype
+
 Requirements:
+
 - Vim 7.3 or later
 
 Latest version:
+
 https://github.com/creasty/mold.vim
 
 
 
 ==============================================================================
-USAGE                                                             *mold-usage*
+2 USAGE                                                           *mold-usage*
+
+------------------------------------------------------------------------------
+2.2 TEMPLATE SELECTION                                        *mold-selection*
 
 To be added...
 
 
 
 ==============================================================================
-CHANGELOG                                                     *mold-changelog*
+3 CHANGELOG                                                   *mold-changelog*
+
+0.0.2
+
+  - Refactoring
+  - File name wild card to match with empty substring '[^/]*'
 
 0.0.1
+
   - Initial version.
 
 
