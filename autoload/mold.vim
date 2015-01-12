@@ -71,13 +71,13 @@ function! mold#search(ft, file, current) abort
 endfunction
 
 function! mold#search_by_filetype(ft, file) abort
-  let files = s:get_candidate(a:ft, a:file)
+  let files = s:get_candidate(a:ft, a:file) + s:get_candidate('_', a:file)
 
   return get(files, 0, '')
 endfunction
 
 function! mold#search_by_intelligent(ft, path) abort
-  let files = s:get_candidate(a:ft, '')
+  let files = s:get_candidate(a:ft, '') + s:get_candidate('_', '')
 
   let found = ['', 0] " ['file', length]
 
