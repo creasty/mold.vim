@@ -61,6 +61,10 @@ function! mold#search(ft, file, current) abort
   let ft_path = no_ft ? '**' : a:ft
   let matches = split(globpath(g:mold_dir, ft_path . '/' . file), "\n")
 
+  if !no_ft
+    let matches += split(globpath(g:mold_dir, '_/' . file), "\n")
+  endif
+
   let tmpl = get(matches, 0, '')
 
   if empty(tmpl) || isdirectory(tmpl)
