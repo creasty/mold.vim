@@ -53,6 +53,7 @@ To be added...
   - Refactoring
   - File name wild card to match with empty substring '[^/]*'
   - The '_' directory for supporting cross-filetype templates
+  - Fix bug of to_search_pattern
 
 0.0.1
 

@@ -134,7 +134,7 @@ endfunction
 "-----------------------------------------------
 function! s:to_search_pattern(path)
   let pattern = escape(a:path, '\\.*$^~')
-  let pattern = substitute(pattern, '\([^/]\+\)/', '\\(\1/\\|.*\\)/\\?', 'g')
+  let pattern = substitute(pattern, '/', '/\\([^/]\\+/\\)\\?', 'g')
   let pattern = substitute(pattern, 'template', '[^/]*', 'g')
 
   return pattern . '$'
