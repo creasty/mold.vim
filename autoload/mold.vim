@@ -22,9 +22,9 @@ endfunction
 "=== Load
 "==============================================================================================
 function! mold#load(file, lnum) abort
-  let tmpl = mold#search(s:get_filetype(), a:file, expand('%:p'))
+  let tmpl = mold#search(s:get_filetype(), expand('%:p'), a:file)
 
-  if empty(tmpl)
+  if tmpl == ''
     return
   endif
 
@@ -43,39 +43,33 @@ endfunction
 
 "=== Search
 "==============================================================================================
-function! mold#search(ft, file, current) abort
-  let no_ft = empty(a:ft)
-  let no_file = empty(a:file)
-  let no_current = empty(a:current)
-
-  if no_file && no_current && no_ft
+function! mold#search(ft, current, file) abort
+  if a:ft == ''
     return ''
+  elseif a:current != '' && a:file == ''
+    return mold#search_by_intelligent(a:ft, a:current)
+  else
+    return mold#search_by_filetype(a:ft, a:file)
   endif
-
-  let file = no_file && !no_current ?
-    \ mold#search_by_intelligent(a:ft, a:current)
-    \ : mold#search_by_filetype(a:ft, a:file)
-
-  return file
 endfunction
 
 function! mold#search_by_filetype(ft, file) abort
-  let found = ['', '']  " ['ft', 'file']
+  let matched = ['', '']  " ['ft', 'file']
 
   for ft in [a:ft, '_']
     let files = s:get_candidate(ft, a:file)
 
     if !empty(files)
-      let found = [a:ft, files[0]]
+      let matched = [ft, files[0]]
       break
     endif
   endfor
 
-  return s:get_template_file(a:ft, files[0])
+  return s:get_template_file(matched[0], matched[1])
 endfunction
 
 function! mold#search_by_intelligent(ft, path) abort
-  let found = [0, '', '']  " [length, 'ft', 'file']
+  let matched = ['', '', 0]  " ['ft', 'file', length]
 
   for ft in [a:ft, '_']
     let files = s:get_candidate(ft, '')
@@ -84,13 +78,13 @@ function! mold#search_by_intelligent(ft, path) abort
       let pattern = s:to_search_pattern(file)
       let len = len(file)
 
-      if match(a:path, pattern, 0, 1) != -1 && found[0] < len
-        let found = [len, ft, file]
+      if match(a:path, pattern, 0, 1) != -1 && matched[2] < len
+        let matched = [ft, file, len]
       endif
     endfor
   endfor
 
-  return s:get_template_file(found[1], found[2])
+  return s:get_template_file(matched[0], matched[1])
 endfunction
 
 
@@ -99,7 +93,7 @@ endfunction
 "  Filetype
 "-----------------------------------------------
 function! s:get_filetype()
-  if empty(&ft)
+  if &ft == ''
     let parts = split(expand('%:t'), '\.')
     return tolower(get(parts, len(parts) - 1, ''))
   else
@@ -137,7 +131,7 @@ endfunction
 "  Get template file
 "-----------------------------------------------
 function! s:get_template_file(ft, file)
-  if empty(a:file)
+  if a:file == ''
     return ''
   else
     return s:regulate_path(join([g:mold_dir, a:ft, a:file], '/'))
