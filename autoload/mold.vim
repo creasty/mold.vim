@@ -22,9 +22,7 @@ endfunction
 "=== Load
 "==============================================================================================
 function! mold#load(file, lnum) abort
-  let ft = s:get_filetype()
-  let current = expand('%:p')
-  let tmpl = mold#search(ft, a:file, current)
+  let tmpl = mold#search(s:get_filetype(), a:file, expand('%:p'))
 
   if empty(tmpl)
     return
@@ -58,46 +56,41 @@ function! mold#search(ft, file, current) abort
     \ mold#search_by_intelligent(a:ft, a:current)
     \ : mold#search_by_filetype(a:ft, a:file)
 
-  let ft_path = no_ft ? '**' : a:ft
-  let matches = split(globpath(g:mold_dir, ft_path . '/' . file), "\n")
-
-  if !no_ft
-    let matches += split(globpath(g:mold_dir, '_/' . file), "\n")
-  endif
-
-  let tmpl = get(matches, 0, '')
-
-  if empty(tmpl) || isdirectory(tmpl)
-    return ''
-  endif
-
-  return tmpl
+  return file
 endfunction
 
 function! mold#search_by_filetype(ft, file) abort
-  let files = s:get_candidate(a:ft, a:file) + s:get_candidate('_', a:file)
+  let found = ['', '']  " ['ft', 'file']
 
-  return get(files, 0, '')
+  for ft in [a:ft, '_']
+    let files = s:get_candidate(ft, a:file)
+
+    if !empty(files)
+      let found = [a:ft, files[0]]
+      break
+    endif
+  endfor
+
+  return s:get_template_file(a:ft, files[0])
 endfunction
 
 function! mold#search_by_intelligent(ft, path) abort
-  let files = s:get_candidate(a:ft, '') + s:get_candidate('_', '')
+  let found = [0, '', '']  " [length, 'ft', 'file']
 
-  let found = ['', 0] " ['file', length]
+  for ft in [a:ft, '_']
+    let files = s:get_candidate(ft, '')
 
-  for file in files
-    let pattern = s:to_search_pattern(file)
-
-    if match(a:path, pattern, 0, 1) != -1
+    for file in files
+      let pattern = s:to_search_pattern(file)
       let len = len(file)
 
-      if found[1] < len
-        let found = [file, len]
+      if match(a:path, pattern, 0, 1) != -1 && found[0] < len
+        let found = [len, ft, file]
       endif
-    end
+    endfor
   endfor
 
-  return found[0]
+  return s:get_template_file(found[1], found[2])
 endfunction
 
 
@@ -134,10 +127,21 @@ endfunction
 "-----------------------------------------------
 function! s:to_search_pattern(path)
   let pattern = escape(a:path, '\\.*$^~')
-  let pattern = substitute(pattern, '/', '/\\([^/]\\+/\\)\\?', 'g')
+  let pattern = substitute(pattern, '/', '/\\([^/]\\+/\\)*', 'g')
   let pattern = substitute(pattern, 'template', '[^/]*', 'g')
 
   return pattern . '$'
+endfunction
+
+
+"  Get template file
+"-----------------------------------------------
+function! s:get_template_file(ft, file)
+  if empty(a:file)
+    return ''
+  else
+    return s:regulate_path(join([g:mold_dir, a:ft, a:file], '/'))
+  endif
 endfunction
 
 
