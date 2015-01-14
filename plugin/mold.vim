@@ -10,7 +10,7 @@ set cpo&vim
 let g:mold_dir = expand(get(g:, 'mold_dir', '~/.vim/template'))
 
 command! -nargs=? -bar -complete=customlist,mold#complete
-  \ Template call mold#load(<q-args>, <line1>)
+  \ Template call mold#load(<q-args>, 0)
 
 augroup plugin_mold_cmd
   autocmd!

@@ -21,21 +21,27 @@ endfunction
 
 "=== Load
 "==============================================================================================
-function! mold#load(file, lnum) abort
+function! mold#load(file, do_confirm) abort
   let tmpl = mold#search(s:get_filetype(), expand('%:p'), a:file)
 
   if tmpl == ''
     return
   endif
 
-  let empty_buffer = line('$') == 1 && strlen(getline(1)) == 0
+  if a:do_confirm && confirm('[Mold] Load "' . tmpl . '"') == 0
+    return
+  endif
 
-  call cursor(a:lnum, 1)
-  silent keepalt :.-1 read `=tmpl`
+  let empty_buffer = line('$') == 1 && strlen(getline(1)) == 0
+  let save_cursor = getcurpos()
+
+  silent keepalt :. read `=tmpl`
 
   if empty_buffer
-    silent $ delete _
+    silent 0 delete _
   endif
+
+  call setpos('.', save_cursor)
 
   doautocmd User MoldLoad
 endfunction
@@ -44,12 +50,12 @@ endfunction
 "=== Search
 "==============================================================================================
 function! mold#search(ft, current, file) abort
-  if a:ft == ''
-    return ''
-  elseif a:current != '' && a:file == ''
+  if a:current != '' && a:file == ''
     return mold#search_by_intelligent(a:ft, a:current)
-  else
+  elseif a:file != ''
     return mold#search_by_filetype(a:ft, a:file)
+  else
+    return ''
   endif
 endfunction
 
