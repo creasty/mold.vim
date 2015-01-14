@@ -14,7 +14,8 @@ command! -nargs=? -bar -complete=customlist,mold#complete
 
 augroup plugin_mold_cmd
   autocmd!
-  autocmd User MoldLoad :  " avoid error
+  autocmd User MoldTemplateLoadPre :
+  autocmd User MoldTemplateLoadPost :
 augroup END
 
 
