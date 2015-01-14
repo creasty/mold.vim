@@ -36,10 +36,10 @@ function! mold#load(file, do_confirm) abort
 
   let empty_buffer = line('$') == 1 && strlen(getline(1)) == 0
 
-  silent keepalt :. read `=tmpl`
+  silent keepalt :.-1 read `=tmpl`
 
   if empty_buffer
-    silent 0 delete _
+    silent $ delete _
   endif
 
   doautocmd User MoldTemplateLoadPost
