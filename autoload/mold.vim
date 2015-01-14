@@ -32,8 +32,9 @@ function! mold#load(file, do_confirm) abort
     return
   endif
 
+  doautocmd User MoldTemplateLoadPre
+
   let empty_buffer = line('$') == 1 && strlen(getline(1)) == 0
-  let save_cursor = getcurpos()
 
   silent keepalt :. read `=tmpl`
 
@@ -41,9 +42,7 @@ function! mold#load(file, do_confirm) abort
     silent 0 delete _
   endif
 
-  call setpos('.', save_cursor)
-
-  doautocmd User MoldLoad
+  doautocmd User MoldTemplateLoadPost
 endfunction
 
 
