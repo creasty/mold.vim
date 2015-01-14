@@ -8,10 +8,13 @@ License: MIT License
 CONTENTS                                                       *mold-contents*
 
 1 INTRODUCTION                                             |mold-introduction|
-2 USAGE                                                           |mold-usage|
-  2.1 TEMPLATE SELECTION                                      |mold-selection|
-  2.2 HOOK                                                         |mold-hook|
-3 CHANGELOG                                                   |mold-changelog|
+2 TEMPLATE SELECTION                                          |mold-selection|
+3 INTERFACE                                                   |mold-interface|
+  3.1 COMMANDS                                                 |mold-commands|
+  3.2 FUNCTIONS                                               |mold-functions|
+  3.3 EVENTS                                                     |mold-events|
+4 EXAMPLE                                                       |mold-example|
+5 CHANGELOG                                                   |mold-changelog|
 
 
 
@@ -36,17 +39,80 @@ https://github.com/creasty/mold.vim
 
 
 ==============================================================================
-2 USAGE                                                           *mold-usage*
-
-------------------------------------------------------------------------------
-2.2 TEMPLATE SELECTION                                        *mold-selection*
+2 TEMPLATE SELECTION                                          *mold-selection*
 
 To be added...
 
 
 
 ==============================================================================
-3 CHANGELOG                                                   *mold-changelog*
+3 INTERFACE                                                   *mold-interface*
+
+------------------------------------------------------------------------------
+3.1 COMMANDS                                                   *mold-commands*
+
+:Template [pattern]                                                *:Template*
+  Loads a template which matches to [pattern] to the current line.
+  If [pattern] is omitted, intelligent selection will be invoked.
+
+
+------------------------------------------------------------------------------
+3.2 FUNCTIONS                                                 *mold-functions*
+
+mold#load(file, do_confirm)                                      *mold#load()*
+  ...
+
+mold#search(ft, current, file)                                 *mold#search()*
+  ...
+
+
+------------------------------------------------------------------------------
+3.3 EVENTS                                                       *mold-events*
+
+User MoldTemplateLoadPre                            *User:MoldTemplateLoadPre*
+  This event occurs before the template is being loaded.
+
+User MoldTemplateLoadPost                          *User:MoldTemplateLoadPost*
+  This event occurs after the template is loaded.
+
+
+
+==============================================================================
+4 EXAMPLE                                                       *mold-example*
+
+>
+  if neobundle#tap('mold.vim')
+    autocmd vimrc BufNewFile * call mold#load('', 1)
+
+    autocmd vimrc User MoldTemplateLoadPre  call <SID>template_before_load()
+    autocmd vimrc User MoldTemplateLoadPost call <SID>template_after_load()
+
+    function! s:template_before_load()
+      let b:mold_saved_cursor = getcurpos()
+    endfunction
+
+    function! s:template_after_load()
+      %s/\<FILE_PATH\>/\=expand('%:p')/ge
+      %s/\<FILE_NAME\>/\=expand('%:t')/ge
+      %s/\<FULL_NAME\>/Yuki Iwanaga/ge
+      %s/\<USER_NAME\>/Creasty/ge
+
+      silent! :%!erb
+
+      if search('<+CURSOR+>')
+        execute 'normal! "_da>'
+      else
+        call setpos('.', b:mold_saved_cursor)
+      endif
+    endfunction
+
+    call neobundle#untap()
+  endif
+
+
+
+==============================================================================
+5 CHANGELOG                                                   *mold-changelog*
 
 0.0.2
 
