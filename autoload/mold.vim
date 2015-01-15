@@ -28,7 +28,7 @@ function! mold#load(file, do_confirm) abort
     return
   endif
 
-  if a:do_confirm && confirm('[Mold] Load "' . tmpl . '"') == 0
+  if a:do_confirm && confirm('[Mold] Load "' . tmpl . '"', '', 0) == 0
     return
   endif
 
