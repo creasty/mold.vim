@@ -7,7 +7,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 
-let g:mold_dir = expand(get(g:, 'mold_dir', '~/.vim/template'))
+let s:config_dir = exists('*stdpath') ? stdpath('config') : '~/.vim'
+let g:mold_dir = expand(get(g:, 'mold_dir', s:config_dir . '/template'))
 
 command! -nargs=? -bar -complete=customlist,mold#complete
   \ Template call mold#load(<q-args>, 0)
